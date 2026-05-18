@@ -8,6 +8,7 @@ import (
 )
 
 func TestCBCRoundTrip(t *testing.T) {
+	// Testa o fluxo em memoria: cifra em CBC e decifra para recuperar os dados.
 	data := []byte("contrato 123 - sinistro aprovado")
 	key := "chave-inicial"
 	iv := uint32(0x01020304)
@@ -23,6 +24,7 @@ func TestCBCRoundTrip(t *testing.T) {
 }
 
 func TestCBCRejectsWrongKey(t *testing.T) {
+	// A etiqueta de verificacao deve rejeitar a decriptacao com chave incorreta.
 	data := []byte("dados pessoais")
 	encrypted := EncryptCBC(data, "chave-correta", 0x10203040)
 
@@ -32,6 +34,7 @@ func TestCBCRejectsWrongKey(t *testing.T) {
 }
 
 func TestFileRoundTrip(t *testing.T) {
+	// Testa o caso completo com arquivos reais em uma pasta temporaria.
 	dir := t.TempDir()
 	input := filepath.Join(dir, "entrada.txt")
 	encrypted := filepath.Join(dir, "saida.is32")

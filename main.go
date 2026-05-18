@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	// Define os argumentos aceitos pelo programa de linha de comando.
 	mode := flag.String("mode", "", "operacao: encrypt ou decrypt")
 	input := flag.String("in", "", "arquivo de entrada")
 	output := flag.String("out", "", "arquivo de saida")
@@ -24,6 +25,8 @@ func main() {
 }
 
 func run(mode, input, output, key string) error {
+	// Todos os modos precisam de uma chave; encrypt/decrypt tambem precisam
+	// de arquivo de entrada e saida. O modo trace usa -in como bloco hexadecimal.
 	if mode == "" || key == "" {
 		return fmt.Errorf("uso: go run . -mode encrypt|decrypt -in entrada -out saida -key chave")
 	}
@@ -44,6 +47,8 @@ func run(mode, input, output, key string) error {
 }
 
 func printTrace(blockText, key string) error {
+	// O trace existe para a documentacao: ele mostra o valor intermediario
+	// do bloco apos cada operacao de cada rodada da cifra.
 	block, err := parseBlock(blockText)
 	if err != nil {
 		return err
@@ -67,6 +72,7 @@ func printTrace(blockText, key string) error {
 }
 
 func parseBlock(value string) (uint32, error) {
+	// Aceita valores como 0x494E4E21 ou decimal, sempre limitados a 32 bits.
 	parsed, err := strconv.ParseUint(value, 0, 32)
 	if err != nil {
 		return 0, fmt.Errorf("bloco invalido: use um valor de 32 bits, por exemplo 0x494E4E21")

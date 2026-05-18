@@ -9,6 +9,8 @@ import (
 
 const tagSize = 4
 
+// Append adiciona uma etiqueta de 32 bits ao final do conteudo original.
+// Essa etiqueta ajuda a detectar chave errada ou arquivo alterado na decriptacao.
 func Append(data []byte, keyText string) []byte {
 	tag := Checksum(data, keyText)
 	out := make([]byte, 0, len(data)+tagSize)
@@ -17,6 +19,7 @@ func Append(data []byte, keyText string) []byte {
 	return out
 }
 
+// StripAndVerify remove a etiqueta e compara com o checksum recalculado.
 func StripAndVerify(data []byte, keyText string) ([]byte, error) {
 	if len(data) < tagSize {
 		return nil, fmt.Errorf("texto claro sem etiqueta de verificacao")
@@ -32,6 +35,8 @@ func StripAndVerify(data []byte, keyText string) ([]byte, error) {
 	return content, nil
 }
 
+// Checksum calcula uma etiqueta simples de 32 bits usando dados e chave.
+// Nao e uma funcao criptografica padrao; foi incluida para este projeto academico.
 func Checksum(data []byte, keyText string) uint32 {
 	value := crypt.MasterKey(keyText) ^ 0x811c9dc5 ^ uint32(len(data))
 	for i, b := range data {

@@ -4,6 +4,8 @@ import "fmt"
 
 const BlockSize = 4
 
+// AddPadding completa o texto ate um multiplo de 4 bytes.
+// O valor escrito em cada byte indica quantos bytes foram adicionados.
 func AddPadding(data []byte) []byte {
 	padding := BlockSize - (len(data) % BlockSize)
 	if padding == 0 {
@@ -18,6 +20,7 @@ func AddPadding(data []byte) []byte {
 	return out
 }
 
+// RemovePadding valida e remove o padding adicionado antes da cifragem.
 func RemovePadding(data []byte) ([]byte, error) {
 	if len(data) == 0 || len(data)%BlockSize != 0 {
 		return nil, fmt.Errorf("padding invalido")

@@ -6,6 +6,7 @@ import (
 )
 
 func TestPaddingRoundTrip(t *testing.T) {
+	// Confirma que o padding completa o bloco e depois pode ser removido.
 	data := []byte("abcde")
 	padded := AddPadding(data)
 	unpadded, err := RemovePadding(padded)

@@ -2,6 +2,8 @@ package crypt
 
 import "github.com/rafinhacuri/crypt/utils"
 
+// MasterKey transforma a chave textual do usuario em uma chave de 32 bits.
+// A funcao usa apenas operacoes basicas: XOR, multiplicacao modular e rotacao.
 func MasterKey(keyText string) uint32 {
 	var hash uint32 = 2166136261
 	for i := 0; i < len(keyText); i++ {
@@ -15,6 +17,8 @@ func MasterKey(keyText string) uint32 {
 	return hash
 }
 
+// DeriveSubkeys gera uma subchave diferente para cada rodada da cifra.
+// As constantes de rodada evitam repetir subchaves mesmo com entradas simples.
 func DeriveSubkeys(keyText string) [Rounds]uint32 {
 	var subkeys [Rounds]uint32
 	state := MasterKey(keyText)
