@@ -1,10 +1,6 @@
 # Projeto de Extensao de Seguranca de Sistemas e Criptografia
 
-## Capa
-
-Inn Seguros - Desenvolvimento de um Algoritmo de Cifra de Blocos
-
-Integrantes: preencher com os nomes completos do grupo.
+---
 
 ## Introducao e justificativa
 
