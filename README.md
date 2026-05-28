@@ -4,15 +4,15 @@
 
 ## Introducao e justificativa
 
-Este trabalho apresenta uma cifra de blocos simetrica criada para proteger arquivos com registros sensiveis da Inn Seguros. O algoritmo utiliza blocos de 32 bits, uma chave principal de 32 bits derivada de uma string informada pelo usuario e uma rede de substituicao e permutacao com oito rodadas.
+Este trabalho apresenta uma cifra de blocos simetrica criada para proteger arquivos com registros sensiveis da Inn Seguros. O algoritmo utiliza blocos de 32 bits, uma chave principal de 32 bits derivada de uma string informada pelo usuario e uma rede de substituicao e permutacao com oito rodadas. A estrutura baseada em substituicao e permutacao segue conceitos presentes em cifras modernas descritas por Stallings e pelo padrao AES publicado pelo NIST.
 
-A implementacao foi feita em Go, sem bibliotecas externas e sem bibliotecas de criptografia. O programa permite encriptar e decriptar arquivos por linha de comando.
+A implementacao foi feita em Go, sem bibliotecas externas e sem bibliotecas de criptografia. O programa permite encriptar e decriptar arquivos por linha de comando. A escolha da linguagem priorizou simplicidade de implementacao, tipagem estatica e facilidade para manipulacao de operacoes bit a bit e testes automatizados.
 
 ## Descricao do algoritmo
 
 O arquivo de entrada e lido em memoria e processado em blocos de 32 bits. Antes da cifragem, o programa adiciona uma etiqueta de verificacao de 32 bits calculada com a chave e o conteudo do arquivo. Em seguida, aplica padding para que o tamanho final seja multiplo de 4 bytes.
 
-A chave textual do usuario e convertida em uma chave principal de 32 bits pela funcao `MasterKey`, baseada em operacoes XOR, multiplicacao modular e rotacoes. A partir dela, `DeriveSubkeys` gera oito subchaves de 32 bits. Cada subchave usa constantes de rodada e uma funcao xorshift para produzir valores diferentes.
+A chave textual do usuario e convertida em uma chave principal de 32 bits pela funcao `MasterKey`, baseada em operacoes XOR, multiplicacao modular e rotacoes. A partir dela, `DeriveSubkeys` gera oito subchaves de 32 bits. Cada subchave usa constantes de rodada e uma funcao xorshift para produzir valores diferentes. O uso de operacoes reversiveis e mistura de bits segue conceitos discutidos por Menezes, Van Oorschot e Vanstone em Handbook of Applied Cryptography.
 
 Cada rodada de encriptacao executa:
 
@@ -21,11 +21,13 @@ Cada rodada de encriptacao executa:
 3. Substituicao de oito nibbles de 4 bits por uma S-box de 16 posicoes gerada a partir da subchave.
 4. Permutacao dos 32 bits por uma tabela Fisher-Yates gerada a partir da subchave.
 
+A combinacao entre substituicao e permutacao busca produzir os efeitos de confusao e difusao descritos por Claude Shannon e discutidos em obras classicas de criptografia aplicada, como Applied Cryptography de Bruce Schneier.
+
 A decriptacao executa as mesmas etapas em ordem inversa: permutacao inversa, substituicao inversa, subtracao da mistura modular e XOR com a subchave da rodada.
 
 ## Modo de operacao
 
-Para cifrar arquivos com mais de um bloco, foi usado um modo encadeado semelhante ao CBC. O primeiro bloco e combinado com um IV de 32 bits armazenado no cabecalho do arquivo cifrado. Cada bloco claro e combinado por XOR com o bloco cifrado anterior antes de entrar na cifra de bloco. Isso evita que blocos iguais de texto claro gerem blocos iguais de texto cifrado dentro do mesmo arquivo.
+Para cifrar arquivos com mais de um bloco, foi usado um modo encadeado semelhante ao CBC. O primeiro bloco e combinado com um IV de 32 bits armazenado no cabecalho do arquivo cifrado. Cada bloco claro e combinado por XOR com o bloco cifrado anterior antes de entrar na cifra de bloco. Isso evita que blocos iguais de texto claro gerem blocos iguais de texto cifrado dentro do mesmo arquivo. A utilizacao de encadeamento de blocos segue principios descritos por Stallings e Schneier para modos de operacao de cifras de bloco.
 
 Formato do arquivo cifrado:
 
@@ -35,11 +37,11 @@ Formato do arquivo cifrado:
 
 ## Justificativa da quantidade de rodadas
 
-O requisito minimo era de tres rodadas. Foram usadas oito rodadas para aumentar a difusao e o efeito avalanche, mantendo o custo computacional baixo porque cada bloco tem apenas 32 bits. Com oito rodadas, uma mudanca pequena na chave ou no texto claro atravessa repetidamente substituicoes nao lineares e permutacoes dependentes da chave.
+O requisito minimo era de tres rodadas. Foram usadas oito rodadas para aumentar a difusao e o efeito avalanche, mantendo o custo computacional baixo porque cada bloco tem apenas 32 bits. Com oito rodadas, uma mudanca pequena na chave ou no texto claro atravessa repetidamente substituicoes nao lineares e permutacoes dependentes da chave. O uso de multiplas rodadas sucessivas segue estruturas iterativas presentes em cifras modernas discutidas por Schneier e pelos trabalhos classicos de Feistel.
 
 ## Efeito avalanche
 
-O efeito avalanche ocorre quando uma pequena alteracao no texto claro ou na chave modifica muitos bits do texto cifrado. Neste algoritmo, isso e estimulado por tres mecanismos:
+O efeito avalanche ocorre quando uma pequena alteracao no texto claro ou na chave modifica muitos bits do texto cifrado. Esse comportamento esta relacionado aos principios de difusao apresentados na literatura classica de criptografia. Neste algoritmo, isso e estimulado por tres mecanismos:
 
 - XOR com subchaves diferentes a cada rodada.
 - Mistura modular reversivel, que introduz propagacao por carregamento aritmetico.
